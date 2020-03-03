@@ -2,7 +2,9 @@ package com.thoughtworks;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -45,34 +47,57 @@ public class App {
   }
 
   public static List<Transaction> get2011Transactions(List<Transaction> transactions) {
-    return Collections.emptyList();
+    return transactions.stream()
+        .filter(transaction -> transaction.getYear() == 2011)
+        .sorted(Comparator.comparingInt(Transaction::getValue))
+        .collect(Collectors.toList());
   }
 
   public static List<String> getTradersCity(List<Transaction> transactions) {
-    return Collections.emptyList();
+    return transactions.stream()
+        .map(transaction -> transaction.getTrader().getCity())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   public static List<Trader> getCambridgeTraders(List<Transaction> transactions) {
-    return Collections.emptyList();
+    return transactions.stream()
+        .map(Transaction::getTrader)
+        .filter(trader -> trader.getCity().equals("Cambridge"))
+        .distinct()
+        .sorted(Comparator.comparingInt(trader -> trader.getName().charAt(0)))
+        .collect(Collectors.toList());
   }
 
   public static List<String> getTradersName(List<Transaction> transactions) {
-    return Collections.emptyList();
+    return transactions.stream()
+        .map(transaction -> transaction.getTrader().getName())
+        .distinct()
+        .sorted(Comparator.comparingInt(name -> name.charAt(0)))
+        .collect(Collectors.toList());
   }
 
   public static boolean hasMilanTrader(List<Transaction> transactions) {
-    return false;
+    return transactions.stream()
+        .anyMatch(transaction -> transaction.getTrader().getCity().equals("Milan"));
   }
 
   public static List<Integer> getCambridgeTransactionsValue(List<Transaction> transactions) {
-    return Collections.emptyList();
+    return transactions.stream()
+        .filter(transaction -> transaction.getTrader().getCity().equals("Cambridge"))
+        .map(Transaction::getValue)
+        .collect(Collectors.toList());
   }
 
   public static int getMaxTransactionValue(List<Transaction> transactions) {
-    return 0;
+    return transactions.stream()
+        .map(Transaction::getValue)
+        .reduce(0, (maxValue, currentValue) -> currentValue > maxValue ? currentValue : maxValue);
   }
 
   public static Transaction getMinTransaction(List<Transaction> transactions) {
-    return null;
+    return transactions.stream()
+        .reduce(transactions.get(0), (minTransaction, currentTransaction) ->
+            currentTransaction.getValue() < minTransaction.getValue() ? currentTransaction : minTransaction);
   }
 }
